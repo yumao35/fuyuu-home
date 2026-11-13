@@ -124,7 +124,7 @@
   /* ---------- featured card ---------- */
   .featured {
     display: grid;
-    grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
+    grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
     gap: 0;
     text-decoration: none;
     color: inherit;
@@ -167,7 +167,7 @@
     pointer-events: none;
   }
 
-  .body { padding: 26px 26px 24px; display: flex; flex-direction: column; }
+  .body { padding: 30px 30px; display: flex; flex-direction: column; justify-content: center; gap: 22px; }
 
   .kicker {
     font-size: 11px;
@@ -179,10 +179,10 @@
 
   .featured h2 {
     font-family: var(--serif);
-    font-size: clamp(26px, 3.4vw, 34px);
-    line-height: 1.2;
-    margin: 0 0 8px;
-    letter-spacing: .02em;
+    font-size: clamp(30px, 4vw, 42px);
+    line-height: 1.15;
+    margin: 0;
+    letter-spacing: .03em;
   }
 
   .featured p {
@@ -219,7 +219,6 @@
   .update a { color: var(--sea-deep); }
 
   .enter {
-    margin-top: auto;
     display: inline-flex;
     align-items: center;
     gap: 10px;
@@ -330,10 +329,10 @@
   <section id="works" aria-labelledby="works-label">
     <p class="label" id="works-label">作品 / WORK</p>
 
-    <!-- 更新游戏地址：把下面 href 换成你的域名（现在是 game.fuyuu.top） -->
-    <!-- 注意：卡片用 article 而不是 <a>，因为内部还有短链 <a>；a 里嵌 a 会让浏览器
-         提前闭合外层链接，把标题以下的整块内容挤到卡片外面（手机端文字溢出、按钮点不动）。 -->
-    <article class="featured">
+    <!-- 大厅只做「封面 + 标题 + 入口」，玩法细节都在门牌页 fuyuu.top/game/。
+         整张卡片就是一个链接：内部不再放第二个 <a>（a 里嵌 a 会让浏览器提前
+         闭合外层链接，内容被挤到卡片外面，手机端就会文字溢出、按钮点不动）。 -->
+    <a class="featured" href="./game/">
       <div class="shot">
         <img src="./cover.jpg"
              srcset="./cover-800.jpg 800w, ./cover.jpg 1600w"
@@ -342,31 +341,19 @@
              alt="苔屿小岛俯视图：环形潟湖、中间一座小山，草地上散布着树林、灯塔和主角">
       </div>
       <div class="body">
-        <p class="kicker">2026 · 网页游戏 · 已上线</p>
         <h2>苔屿</h2>
-        <p>一座低多边形纸艺风的小岛。抛竿、钓鱼、和鱼搏斗一场「弦歌」，种点菜，跟岛上的邻居打打交道。手机横屏即玩。</p>
-        <ul class="tags">
-          <li>three.js</li>
-          <li>单人 · 休闲</li>
-          <li>手机可玩</li>
-          <li>纸艺质感</li>
-        </ul>
-        <p class="update">更新 2026-11-13 · 浏览器打开即玩，不用下载 · 手机横屏体验更好<br>也可以记这个短链：<a href="./game/">fuyuu.top/game</a></p>
-        <a class="enter" href="./game/">进入小岛 <span class="arrow">→</span></a>
+        <span class="enter">进入小岛 <span class="arrow">→</span></span>
       </div>
-    </article>
+    </a>
   </section>
 
   <section class="about" id="about" aria-labelledby="about-title">
     <div>
       <h2 id="about-title">关于</h2>
-      <p>这里放我自己做的交互作品。目前上线的是《苔屿》——一座可以走进去的小岛，钓鱼、种菜、跟邻居打交道。</p>
+      <p>这里放我自己做的交互作品。现在只开了一座小岛，更多还在路上。</p>
     </div>
     <div>
       <p class="meta">
-        <b>在架</b>苔屿<br>
-        <b>状态</b>已上线<br>
-        <b>更新</b>2026-11-13<br>
         <b>联系</b><a href="mailto:1649198167@qq.com">1649198167@qq.com</a>
       </p>
     </div>
@@ -374,7 +361,7 @@
 
   <footer>
     <span>© 2026 fuyuu</span>
-    <span><a href="./game/">fuyuu.top/game</a> · <a href="https://game.fuyuu.top/" target="_blank" rel="noopener">game.fuyuu.top</a></span>
+    <span><a href="./game/">fuyuu.top/game</a></span>
   </footer>
 
 </div>
