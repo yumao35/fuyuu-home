@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>苔屿 · 在线玩 | fuyuu</title>
+<meta name="description" content="《苔屿》是一座低多边形纸艺风的小岛：抛竿钓鱼、和鱼搏斗一场「弦歌」、种点菜、和邻居打交道。浏览器打开就能玩，手机横屏体验更好。">
+<meta name="theme-color" content="#f6efdd">
+<meta property="og:type" content="website">
+<meta property="og:title" content="苔屿 · 在线玩">
+<meta property="og:description" content="抛竿、钓鱼、种菜、和邻居打交道。浏览器打开就能玩。">
+<meta property="og:image" content="../cover.jpg">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23fff8eb'/%3E%3Cpath d='M6 20c2-6 6-9 10-9s8 3 10 9c-3 3-6 4-10 4s-7-1-10-4z' fill='%2378b6a8'/%3E%3Ccircle cx='16' cy='15' r='3.4' fill='%235f7f6a'/%3E%3C/svg%3E">
+<style>
+  :root {
+    --ink: #241d18;
+    --ink-soft: #5a4f45;
+    --paper: #f6efdd;
+    --paper-lift: #fff8eb;
+    --paper-deep: #ece0c6;
+    --butter: #ffe27a;
+    --sea-deep: #3f7c72;
+    --serif: "Songti SC", "STSong", "Noto Serif SC", "Source Han Serif SC", serif;
+    --sans: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", "Helvetica Neue", Arial, sans-serif;
+    --radius: 18px;
+    --shadow-ink: 3px 3px 0 rgba(36, 29, 24, .82);
+  }
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0;
+    padding: 0 20px 56px;
+    color: var(--ink);
+    font-family: var(--sans);
+    line-height: 1.65;
+    background-color: var(--paper);
+    background-image:
+      radial-gradient(120% 80% at 12% -10%, #fffdf5 0%, rgba(255, 253, 245, 0) 55%),
+      radial-gradient(90% 60% at 100% 0%, #f0f7f2 0%, rgba(240, 247, 242, 0) 60%),
+      radial-gradient(70% 50% at 50% 110%, #efe3c9 0%, rgba(239, 227, 201, 0) 70%);
+    background-attachment: fixed;
+  }
+  .wrap { width: 100%; max-width: 900px; margin: 0 auto; }
+  .top {
+    display: flex; align-items: baseline; justify-content: space-between;
+    gap: 16px; flex-wrap: wrap; padding: 30px 4px 24px;
+    font-size: 13px; letter-spacing: .08em;
+  }
+  .top a { color: var(--ink-soft); text-decoration: none; border-bottom: 1.5px solid transparent; }
+  .top a:hover, .top a:focus-visible { color: var(--ink); border-bottom-color: var(--ink); }
+  .back { font-family: var(--serif); font-size: 22px; font-weight: 700; letter-spacing: .04em; }
+  .top nav { display: flex; gap: 18px; }
+  .label {
+    display: flex; align-items: center; gap: 10px;
+    margin: 0 4px 14px; font-size: 11px; letter-spacing: .22em;
+    text-transform: uppercase; color: var(--ink-soft);
+  }
+  .label::after { content: ""; flex: 1; height: 1px; background: linear-gradient(90deg, rgba(36,29,24,.22), rgba(36,29,24,0)); }
+  .card {
+    background: var(--paper-lift);
+    border: 2px solid var(--ink);
+    border-radius: var(--radius);
+    overflow: hidden;
+    box-shadow: var(--shadow-ink);
+    display: grid;
+    grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+  }
+  .shot { position: relative; background: var(--paper-deep); min-height: 240px; overflow: hidden; }
+  .shot img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: 50% 46%; }
+  .shot::after { content: ""; position: absolute; inset: 0; box-shadow: inset 0 0 0 1px rgba(36,29,24,.10); pointer-events: none; }
+  .body { padding: 28px 28px 26px; display: flex; flex-direction: column; }
+  .kicker { font-size: 11px; letter-spacing: .2em; color: var(--sea-deep); text-transform: uppercase; margin: 0 0 8px; }
+  h1 { font-family: var(--serif); font-size: clamp(32px, 4.6vw, 46px); line-height: 1.15; margin: 0 0 12px; letter-spacing: .02em; }
+  .desc { margin: 0 0 16px; font-size: 15px; color: var(--ink-soft); }
+  .tags { display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 18px; padding: 0; list-style: none; }
+  .tags li { font-size: 11.5px; padding: 3px 9px; border-radius: 999px; background: #fffdf5; border: 1px solid rgba(36,29,24,.22); color: var(--ink-soft); }
+  .meta { font-size: 12.5px; color: var(--ink-soft); line-height: 1.9; margin: 0 0 22px; }
+  .meta b { display: inline-block; min-width: 4.6em; color: var(--ink); font-weight: 600; }
+  .enter {
+    margin-top: auto; display: inline-flex; align-items: center; gap: 10px;
+    align-self: flex-start; padding: 12px 24px; border-radius: 999px;
+    background: var(--ink); color: var(--paper-lift); text-decoration: none;
+    font-size: 15px; letter-spacing: .08em; border: 2px solid var(--ink);
+    box-shadow: 3px 3px 0 rgba(36,29,24,.22);
+    transition: background .18s ease, color .18s ease, transform .18s ease;
+  }
+  .enter:hover, .enter:focus-visible { background: var(--butter); color: var(--ink); transform: translate(-2px, -2px); }
+  .enter:focus-visible { outline: 3px solid var(--sea-deep); outline-offset: 4px; }
+  .enter .arrow { transition: transform .18s ease; }
+  .enter:hover .arrow { transform: translateX(4px); }
+  footer {
+    margin-top: 40px; padding-top: 18px; border-top: 1px solid rgba(36,29,24,.18);
+    display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap;
+    font-size: 12px; color: rgba(90,79,69,.85);
+  }
+  footer a { color: inherit; text-decoration: none; border-bottom: 1px solid rgba(36,29,24,.25); }
+  @media (max-width: 780px) {
+    body { padding: 0 14px 40px; }
+    .top { padding: 24px 2px 20px; }
+    .card { grid-template-columns: 1fr; }
+    .shot { min-height: 0; aspect-ratio: 16 / 9; }
+    .body { padding: 20px 18px 22px; }
+  }
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } .enter:hover { transform: none; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="top">
+    <a class="back" href="../">← fuyuu</a>
+    <nav>
+      <a href="../#works">作品</a>
+      <a href="../#about">关于</a>
+    </nav>
+  </header>
+
+  <p class="label">作品 / WORK · 01</p>
+
+  <article class="card">
+    <div class="shot">
+      <img src="../cover.jpg"
+           srcset="../cover-800.jpg 800w, ../cover.jpg 1600w"
+           sizes="(max-width: 780px) 100vw, 500px"
+           width="1600" height="900"
+           alt="苔屿小岛俯视图：环形潟湖、中间一座小山，草地上散布着树林、灯塔和主角">
+    </div>
+    <div class="body">
+      <p class="kicker">2026 · 网页游戏 · 已上线</p>
+      <h1>苔屿</h1>
+      <p class="desc">一座低多边形纸艺风的小岛。抛竿、钓鱼、和鱼搏斗一场「弦歌」，种点菜，跟岛上的邻居打打交道。</p>
+      <ul class="tags">
+        <li>three.js</li>
+        <li>单人 · 休闲</li>
+        <li>手机可玩</li>
+        <li>纸艺质感</li>
+      </ul>
+      <p class="meta">
+        <b>游玩</b>浏览器打开即玩，不用下载；手机横屏体验更好<br>
+        <b>更新</b>2026-11-13<br>
+        <b>存档</b>保存在本机浏览器，换域名前可在设置里导出
+      </p>
+      <a class="enter" href="https://game.fuyuu.top/" target="_blank" rel="noopener">进入小岛 <span class="arrow">→</span></a>
+    </div>
+  </article>
+
+  <footer>
+    <span>© 2026 fuyuu</span>
+    <span><a href="../">返回大厅</a> · <a href="https://game.fuyuu.top/" target="_blank" rel="noopener">game.fuyuu.top</a></span>
+  </footer>
+
+</div>
+</body>
+</html>
