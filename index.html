@@ -39,6 +39,7 @@
     color: var(--ink);
     font-family: var(--sans);
     line-height: 1.65;
+    overflow-wrap: break-word;
     background-color: var(--paper);
     background-image:
       radial-gradient(120% 80% at 12% -10%, #fffdf5 0%, rgba(255, 253, 245, 0) 55%),
@@ -227,12 +228,17 @@
     border-radius: 999px;
     background: var(--ink);
     color: var(--paper-lift);
+    text-decoration: none;
     font-size: 14px;
     letter-spacing: .08em;
     border: 2px solid var(--ink);
     box-shadow: 3px 3px 0 rgba(36, 29, 24, .22);
     transition: background .18s ease, color .18s ease, transform .18s ease;
   }
+
+  .enter:hover,
+  .enter:focus-visible { background: var(--butter); color: var(--ink); }
+  .enter:focus-visible { outline: 3px solid var(--sea-deep); outline-offset: 4px; }
 
   .enter .arrow { transition: transform .18s ease; }
 
@@ -325,7 +331,9 @@
     <p class="label" id="works-label">作品 / WORK</p>
 
     <!-- 更新游戏地址：把下面 href 换成你的域名（现在是 game.fuyuu.top） -->
-    <a class="featured" href="https://game.fuyuu.top/" target="_blank" rel="noopener">
+    <!-- 注意：卡片用 article 而不是 <a>，因为内部还有短链 <a>；a 里嵌 a 会让浏览器
+         提前闭合外层链接，把标题以下的整块内容挤到卡片外面（手机端文字溢出、按钮点不动）。 -->
+    <article class="featured">
       <div class="shot">
         <img src="./cover.jpg"
              srcset="./cover-800.jpg 800w, ./cover.jpg 1600w"
@@ -344,9 +352,9 @@
           <li>纸艺质感</li>
         </ul>
         <p class="update">更新 2026-11-13 · 浏览器打开即玩，不用下载 · 手机横屏体验更好<br>也可以记这个短链：<a href="./game/">fuyuu.top/game</a></p>
-        <span class="enter">进入小岛 <span class="arrow">→</span></span>
+        <a class="enter" href="https://game.fuyuu.top/">进入小岛 <span class="arrow">→</span></a>
       </div>
-    </a>
+    </article>
   </section>
 
   <section class="about" id="about" aria-labelledby="about-title">
