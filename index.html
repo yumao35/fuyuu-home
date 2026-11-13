@@ -123,11 +123,10 @@
 
   /* ---------- featured card ---------- */
   .featured {
+    position: relative;
     display: grid;
     grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
     gap: 0;
-    text-decoration: none;
-    color: inherit;
     background: var(--paper-lift);
     border: 2px solid var(--ink);
     border-radius: var(--radius);
@@ -137,7 +136,7 @@
   }
 
   .featured:hover,
-  .featured:focus-visible {
+  .featured:focus-within {
     transform: translate(-2px, -2px);
     box-shadow: 6px 6px 0 rgba(36, 29, 24, .82);
   }
@@ -167,7 +166,15 @@
     pointer-events: none;
   }
 
-  .body { padding: 30px 30px; display: flex; flex-direction: column; justify-content: center; gap: 22px; }
+  .body { padding: 30px 30px; display: flex; flex-direction: column; justify-content: center; gap: 18px; }
+
+  /* 标题和地址链接同一行：链接就在标题后面，不再单独占一行 */
+  .title-row {
+    display: flex;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: 6px 16px;
+  }
 
   .kicker {
     font-size: 11px;
@@ -218,31 +225,35 @@
 
   .update a { color: var(--sea-deep); }
 
+  /* 标题后面直接写真实地址（不是「进入小岛」这种按钮文案）：
+     fuyuu.top/game 就是入口地址，点它一定跳转；再用 ::after 把整张卡片铺满，
+     点封面同样能进。整张卡片里只保留这一个 <a>（a 里嵌 a 会让浏览器提前闭合
+     外层链接，手机端就会文字溢出、按钮点不动）。 */
   .enter {
     display: inline-flex;
     align-items: center;
-    gap: 10px;
-    align-self: flex-start;
-    padding: 11px 20px;
-    border-radius: 999px;
-    background: var(--ink);
-    color: var(--paper-lift);
+    gap: 6px;
+    padding: 1px 0 2px;
+    color: var(--sea-deep);
     text-decoration: none;
-    font-size: 14px;
-    letter-spacing: .08em;
-    border: 2px solid var(--ink);
-    box-shadow: 3px 3px 0 rgba(36, 29, 24, .22);
-    transition: background .18s ease, color .18s ease, transform .18s ease;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 13.5px;
+    letter-spacing: .01em;
+    border-bottom: 2px solid currentColor;
+    transition: color .18s ease;
+    word-break: break-all;
+  }
+
+  .enter::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: var(--radius);
   }
 
   .enter:hover,
-  .enter:focus-visible { background: var(--butter); color: var(--ink); }
-  .enter:focus-visible { outline: 3px solid var(--sea-deep); outline-offset: 4px; }
-
-  .enter .arrow { transition: transform .18s ease; }
-
-  .featured:hover .enter { background: var(--butter); color: var(--ink); }
-  .featured:hover .enter .arrow { transform: translateX(4px); }
+  .enter:focus-visible { color: var(--ink); }
+  .enter:focus-visible { outline: 3px solid var(--sea-deep); outline-offset: 6px; }
 
   /* ---------- about ---------- */
   .about {
@@ -329,10 +340,10 @@
   <section id="works" aria-labelledby="works-label">
     <p class="label" id="works-label">作品 / WORK</p>
 
-    <!-- 大厅只做「封面 + 标题 + 入口」，玩法细节都在门牌页 fuyuu.top/game/。
-         整张卡片就是一个链接：内部不再放第二个 <a>（a 里嵌 a 会让浏览器提前
-         闭合外层链接，内容被挤到卡片外面，手机端就会文字溢出、按钮点不动）。 -->
-    <a class="featured" href="./game/">
+    <!-- 大厅只做「封面 + 标题 + 进入链接」，玩法细节都在门牌页 fuyuu.top/game/。
+         注意：卡片本身不是链接，唯一的 <a> 是标题后面那个 fuyuu.top/game，
+         它用 ::after 铺满整张卡片，所以点封面也等于点链接。 -->
+    <article class="featured">
       <div class="shot">
         <img src="./cover.jpg"
              srcset="./cover-800.jpg 800w, ./cover.jpg 1600w"
@@ -341,10 +352,12 @@
              alt="苔屿小岛俯视图：环形潟湖、中间一座小山，草地上散布着树林、灯塔和主角">
       </div>
       <div class="body">
-        <h2>苔屿</h2>
-        <span class="enter">进入小岛 <span class="arrow">→</span></span>
+        <div class="title-row">
+          <h2>苔屿</h2>
+          <a class="enter" href="./game/">fuyuu.top/game</a>
+        </div>
       </div>
-    </a>
+    </article>
   </section>
 
   <section class="about" id="about" aria-labelledby="about-title">
