@@ -260,11 +260,12 @@
   else window.addEventListener("load", function () { window.setTimeout(warm, 900); });
 })();
 
-/* 「更新」日期由发布脚本在每次推送时写进 HTML（见 tools/publish.py）。
-   这里再补一层：延迟 2 秒去读游戏仓库最后一次提交时间，只用来把日期校正到最新，
-   显示仍然只到「年-月-日」，不带时分 —— 这样即使哪天手动 git push 忘了跑脚本，
-   日期也不会停在旧的那天。请求失败、超时、限流都静默保留脚本写好的日期；
-   门牌页首要任务是预热游戏首页，这个可有可无的查询绝不能抢它的带宽。 */
+/* 「更新」只跟游戏本体挂钩：静态日期由发布脚本从游戏仓库 HEAD 的提交日期写进
+   HTML（见 tools/publish.py），门牌页 / 大厅自己改文案不会让它变化。
+   这里再补一层：延迟 2 秒去读游戏仓库最后一次提交时间校正日期，显示仍然只到
+   「年-月-日」，不带时分 —— 这样即使哪天手动 git push 忘了跑脚本，日期也不会
+   停在旧的那天。请求失败、超时、限流都静默保留脚本写好的日期；门牌页首要任务
+   是预热游戏首页，这个可有可无的查询绝不能抢它的带宽。 */
 (function () {
   var el = document.getElementById("lastUpdated");
   if (!el || !window.fetch || !window.Promise) return;
@@ -286,9 +287,8 @@
           /* GitHub 给的是 UTC；用 +8h 再按 UTC 分量读，避免依赖旧内核的时区数据库 */
           var bj = new Date(d.getTime() + 8 * 3600 * 1000);
           var date = bj.getUTCFullYear() + "-" + pad(bj.getUTCMonth() + 1) + "-" + pad(bj.getUTCDate());
-          /* 静态日期是发布脚本在「本次推送」时写下的，可能比游戏仓库的最后提交
-             还新（例如只改了门牌页文案）。只在提交日期不早于它时才覆盖，
-             否则保留静态日期 —— 两边取较晚的那个，永远不会显示倒退的日期。 */
+          /* 静态日期也来自游戏仓库 HEAD 提交，两边本应一致；仍只在不早于它时覆盖，
+             避免 GitHub API 返回异常旧值时把日期改倒退。 */
           var fallback = el.textContent.trim();
           if (date >= fallback) el.textContent = date;
         });
