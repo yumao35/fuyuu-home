@@ -284,8 +284,13 @@
           if (isNaN(d.getTime())) throw new Error("bad date");
           /* GitHub 给的是 UTC；用 +8h 再按 UTC 分量读，避免依赖旧内核的时区数据库 */
           var bj = new Date(d.getTime() + 8 * 3600 * 1000);
-          el.textContent = bj.getUTCFullYear() + "-" + pad(bj.getUTCMonth() + 1) + "-" +
+          var full = bj.getUTCFullYear() + "-" + pad(bj.getUTCMonth() + 1) + "-" +
             pad(bj.getUTCDate()) + " " + pad(bj.getUTCHours()) + ":" + pad(bj.getUTCMinutes());
+          /* 静态日期是发布脚本在「本次推送」时写下的，可能比游戏仓库的最后提交
+             还新（例如只改了门牌页文案）。只在提交时间不早于它时才用更精确的值覆盖，
+             否则保留静态日期 —— 两边取较晚的那个，永远不会显示倒退的日期。 */
+          var fallback = el.textContent.trim();
+          if (full.slice(0, 10) >= fallback) el.textContent = full;
         });
       Promise.race([request, timeout])
         .catch(function () { /* 静态日期已由发布脚本写好，这里不做任何补救 */ })
