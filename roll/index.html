@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>滚动吧！奶蛋 · 在线玩 | fuyuu</title>
+<meta name="description" content="《滚动吧！奶蛋》是一片光谱点阵织成的帷幕：轻点荡开一圈，按住攒足力气，奶蛋会被波顶起来翻着跟头飞出去。浏览器打开就能玩，手机也能玩。">
+<meta name="theme-color" content="#f6efdd">
+<meta property="og:type" content="website">
+<meta property="og:title" content="滚动吧！奶蛋 · 在线玩">
+<meta property="og:description" content="点击荡开一圈光波，把奶蛋弹上天。浏览器打开就能玩。">
+<meta property="og:image" content="./cover.jpg">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%230d1116'/%3E%3Cpath d='M16 24c-6.4-4.2-9.4-7.8-9.4-11.2A4.7 4.7 0 0116 10a4.7 4.7 0 019.4 2.8c0 3.4-3 7-9.4 11.2z' fill='%23e8b878'/%3E%3C/svg%3E">
+<!-- 这一页不只是门牌，也是预热页：玩家读介绍的几秒钟里，浏览器在后台把游戏首页
+     拉进 HTTP 缓存，点下去就不用干等。游戏现在和门牌同一个域，提前拉一次就够。 -->
+<link rel="prefetch" href="./play/index.html" as="document">
+<style>
+  :root {
+    --ink: #241d18;
+    --ink-soft: #5a4f45;
+    --paper: #f6efdd;
+    --paper-lift: #fff8eb;
+    --paper-deep: #ece0c6;
+    --butter: #ffe27a;
+    --sea-deep: #3f7c72;
+    --serif: "Songti SC", "STSong", "Noto Serif SC", "Source Han Serif SC", serif;
+    --sans: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", "Helvetica Neue", Arial, sans-serif;
+    --radius: 18px;
+    --shadow-ink: 3px 3px 0 rgba(36, 29, 24, .82);
+  }
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0;
+    padding: 0 20px 56px;
+    color: var(--ink);
+    font-family: var(--sans);
+    line-height: 1.65;
+    background-color: var(--paper);
+    background-image:
+      radial-gradient(120% 80% at 12% -10%, #fffdf5 0%, rgba(255, 253, 245, 0) 55%),
+      radial-gradient(90% 60% at 100% 0%, #f0f7f2 0%, rgba(240, 247, 242, 0) 60%),
+      radial-gradient(70% 50% at 50% 110%, #efe3c9 0%, rgba(239, 227, 201, 0) 70%);
+    background-attachment: fixed;
+  }
+  .wrap { width: 100%; max-width: 900px; margin: 0 auto; }
+  .top {
+    display: flex; align-items: baseline; justify-content: space-between;
+    gap: 16px; flex-wrap: wrap; padding: 30px 4px 24px;
+    font-size: 13px; letter-spacing: .08em;
+  }
+  .top a { color: var(--ink-soft); text-decoration: none; border-bottom: 1.5px solid transparent; }
+  .top a:hover, .top a:focus-visible { color: var(--ink); border-bottom-color: var(--ink); }
+  .back { font-family: var(--serif); font-size: 22px; font-weight: 700; letter-spacing: .04em; }
+  .top nav { display: flex; gap: 18px; }
+  .label {
+    display: flex; align-items: center; gap: 10px;
+    margin: 0 4px 14px; font-size: 11px; letter-spacing: .22em;
+    text-transform: uppercase; color: var(--ink-soft);
+  }
+  .label::after { content: ""; flex: 1; height: 1px; background: linear-gradient(90deg, rgba(36,29,24,.22), rgba(36,29,24,0)); }
+  .card {
+    background: var(--paper-lift);
+    border: 2px solid var(--ink);
+    border-radius: var(--radius);
+    overflow: hidden;
+    box-shadow: var(--shadow-ink);
+    display: grid;
+    grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+  }
+  /* ---- 封面画廊：单张封面换成可滑动的多图画廊 ----
+     用原生 scroll-snap 做横向滑动：手指划、触控板、鼠标拖都由浏览器处理，
+     不引入任何库，也不会跟门牌页的预取脚本抢主线程。 */
+  .shot { position: relative; background: var(--paper-deep); min-height: 240px; overflow: hidden; }
+  .carousel-track {
+    position: absolute; inset: 0;
+    display: flex;
+    overflow-x: auto; overflow-y: hidden;
+    scroll-snap-type: x mandatory;
+    scroll-behavior: smooth;
+    overscroll-behavior-x: contain;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    -webkit-overflow-scrolling: touch;
+  }
+  .carousel-track::-webkit-scrollbar { display: none; }
+  .slide {
+    position: relative; flex: 0 0 100%; height: 100%; margin: 0;
+    scroll-snap-align: start; scroll-snap-stop: always;
+    background: var(--paper-deep);
+  }
+  .slide img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: 50% 46%; }
+  .shot::after {
+    content: ""; position: absolute; inset: 0; z-index: 2;
+    box-shadow: inset 0 0 0 1px rgba(36,29,24,.10); pointer-events: none;
+  }
+  .slide-tag {
+    position: absolute; right: 12px; top: 12px; z-index: 3;
+    padding: 3px 11px; border: 1.5px solid var(--ink); border-radius: 999px;
+    background: rgba(255,248,235,.9); color: var(--ink);
+    font-size: 11px; letter-spacing: .1em; white-space: nowrap; pointer-events: none;
+  }
+  .carousel-arrow {
+    position: absolute; top: 50%; z-index: 4; transform: translateY(-50%);
+    width: 34px; height: 34px; padding: 0; display: grid; place-items: center;
+    border: 2px solid var(--ink); border-radius: 999px;
+    background: rgba(255,248,235,.92); color: var(--ink);
+    font: 700 19px/1 var(--sans); cursor: pointer;
+    opacity: 0; transition: opacity .18s ease, background .18s ease;
+  }
+  .carousel-arrow.prev { left: 10px; }
+  .carousel-arrow.next { right: 10px; }
+  .carousel:hover .carousel-arrow, .carousel-arrow:focus-visible { opacity: 1; }
+  .carousel-arrow:hover { background: var(--butter); }
+  .carousel-arrow:focus-visible { outline: 3px solid var(--sea-deep); outline-offset: 3px; }
+  .carousel-dots {
+    position: absolute; left: 0; right: 0; bottom: 11px; z-index: 4;
+    display: flex; justify-content: center; gap: 7px; pointer-events: none;
+  }
+  .carousel-dots button {
+    pointer-events: auto; width: 9px; height: 9px; padding: 0;
+    border: 1.5px solid var(--ink); border-radius: 999px;
+    background: rgba(255,248,235,.65); cursor: pointer;
+    transition: width .2s ease, background .2s ease;
+  }
+  .carousel-dots button[aria-selected="true"] { width: 22px; background: var(--ink); }
+  .carousel-dots button:focus-visible { outline: 3px solid var(--sea-deep); outline-offset: 3px; }
+  /* 触屏靠手指划，不需要左右箭头占位 */
+  @media (hover: none) { .carousel-arrow { display: none; } }
+  .body { padding: 28px 28px 26px; display: flex; flex-direction: column; }
+  .kicker { font-size: 11px; letter-spacing: .2em; color: var(--sea-deep); text-transform: uppercase; margin: 0 0 8px; }
+  h1 { font-family: var(--serif); font-size: clamp(32px, 4.6vw, 46px); line-height: 1.15; margin: 0 0 12px; letter-spacing: .02em; }
+  /* 全角叹号自带右侧空隙，收一点回来，别让标题看着像多了个空格 */
+  .bang { margin-right: -.30em; }
+  .desc { margin: 0 0 16px; font-size: 15px; color: var(--ink-soft); }
+  .tags { display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 18px; padding: 0; list-style: none; }
+  .tags li { font-size: 11.5px; padding: 3px 9px; border-radius: 999px; background: #fffdf5; border: 1px solid rgba(36,29,24,.22); color: var(--ink-soft); }
+  .meta { font-size: 12.5px; color: var(--ink-soft); line-height: 1.9; margin: 0 0 22px; }
+  .meta b { display: inline-block; min-width: 4.6em; color: var(--ink); font-weight: 600; }
+  .enter {
+    margin-top: auto; display: inline-flex; align-items: center; gap: 10px;
+    align-self: flex-start; padding: 12px 24px; border-radius: 999px;
+    background: var(--ink); color: var(--paper-lift); text-decoration: none;
+    font-size: 15px; letter-spacing: .08em; border: 2px solid var(--ink);
+    box-shadow: 3px 3px 0 rgba(36,29,24,.22);
+    transition: background .18s ease, color .18s ease, transform .18s ease;
+  }
+  .enter:hover, .enter:focus-visible { background: var(--butter); color: var(--ink); transform: translate(-2px, -2px); }
+  .enter:focus-visible { outline: 3px solid var(--sea-deep); outline-offset: 4px; }
+  .enter .arrow { transition: transform .18s ease; }
+  .enter:hover .arrow { transform: translateX(4px); }
+  footer {
+    margin-top: 40px; padding-top: 18px; border-top: 1px solid rgba(36,29,24,.18);
+    display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap;
+    font-size: 12px; color: rgba(90,79,69,.85);
+  }
+  footer a { color: inherit; text-decoration: none; border-bottom: 1px solid rgba(36,29,24,.25); }
+  @media (max-width: 780px) {
+    body { padding: 0 14px 40px; }
+    .top { padding: 24px 2px 20px; }
+    .card { grid-template-columns: 1fr; }
+    .shot { min-height: 0; aspect-ratio: 16 / 9; }
+    .body { padding: 20px 18px 22px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    * { transition: none !important; }
+    .enter:hover { transform: none; }
+    .carousel-track { scroll-behavior: auto !important; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="top">
+    <a class="back" href="../">← fuyuu</a>
+    <nav>
+      <a href="../#works">作品</a>
+      <a href="../#about">关于</a>
+    </nav>
+  </header>
+
+  <p class="label">作品 / WORK · 02</p>
+
+  <article class="card">
+    <!-- 三张实机画面：封面（帷幕 + 奶蛋）+ 按住的大波 / 画布上的一笔。
+         后两张用 data-src 延迟注入，避免抢在「预热游戏首页」前面占带宽。
+         俯视那张不放这里——留给人自己在游戏里推上去看。 -->
+    <div class="shot carousel" id="shotCarousel" aria-roledescription="carousel" aria-label="滚动吧！奶蛋 游戏画面">
+      <div class="carousel-track" id="carouselTrack" tabindex="0">
+        <figure class="slide">
+          <img src="./cover.jpg"
+               srcset="./cover-800.jpg 800w, ./cover.jpg 1600w"
+               sizes="(max-width: 780px) 100vw, 500px"
+               width="1600" height="900" fetchpriority="high"
+               alt="光谱点阵帷幕上，一颗发光的奶蛋站在波纹里">
+          <span class="slide-tag">帷幕与奶蛋</span>
+        </figure>
+        <figure class="slide">
+          <img data-src="./shots/press.jpg" width="1600" height="900" decoding="async"
+               alt="按住不放，一圈金色的波从手指下荡开">
+          <span class="slide-tag">按住 1 秒</span>
+        </figure>
+        <figure class="slide">
+          <img data-src="./shots/canvas.jpg" width="1600" height="900" decoding="async"
+               alt="右上角的画布卡片里画着一个圆圈，勾出的形状停在画布上">
+          <span class="slide-tag">画一笔</span>
+        </figure>
+      </div>
+      <button type="button" class="carousel-arrow prev" id="shotPrev" aria-label="上一张画面">‹</button>
+      <button type="button" class="carousel-arrow next" id="shotNext" aria-label="下一张画面">›</button>
+      <div class="carousel-dots" role="tablist" aria-label="选择游戏画面">
+        <button type="button" role="tab" aria-selected="true" aria-label="第 1 张：帷幕与奶蛋"></button>
+        <button type="button" role="tab" aria-selected="false" aria-label="第 2 张：按住一秒"></button>
+        <button type="button" role="tab" aria-selected="false" aria-label="第 3 张：画一笔"></button>
+      </div>
+    </div>
+    <div class="body">
+      <p class="kicker">2026 · 交互玩具 · 已上线</p>
+      <h1>滚动吧<span class="bang">！</span>奶蛋</h1>
+      <p class="desc">点一下，帷幕轻轻荡开；按住越久，波越大。奶蛋会被波顶得翻着跟头飞起来，撞到边上又弹回来。右上角还能画一笔，拖到帷幕上松手就放下了。</p>
+      <ul class="tags">
+        <li>光谱点阵帷幕</li>
+        <li>会弹飞的奶蛋</li>
+        <li>画一笔放下</li>
+        <li>手机可玩</li>
+      </ul>
+      <p class="meta">
+        <b>更新</b><span id="lastUpdated">2026-11-17</span>
+      </p>
+      <a class="enter" href="./play/">进入帷幕 <span class="arrow">→</span></a>
+    </div>
+  </article>
+
+  <footer>
+    <span>© 2026 fuyuu</span>
+    <span><a href="../">返回大厅</a> · <a href="./play/">fuyuu.top/roll/play</a></span>
+  </footer>
+
+</div>
+<script>
+/* prefetch 优先级很低，个别浏览器会拖到很晚才发。玩家在这一页通常只停两三秒，
+   首屏出来之后再补一次显式预取；已经命中缓存就不会重复下载。 */
+(function () {
+  function warm() {
+    try {
+      fetch("./play/", { mode: "no-cors", credentials: "omit" }).catch(function () {});
+    } catch (error) { /* 预取失败也不影响跳转 */ }
+  }
+  if (document.readyState === "complete") window.setTimeout(warm, 900);
+  else window.addEventListener("load", function () { window.setTimeout(warm, 900); });
+})();
+
+/* 封面画廊：滑动本身交给 CSS scroll-snap，这里只补自动翻页、圆点、箭头和键盘。
+   注意别让这几张图抢带宽 —— 门牌页的首要任务是把游戏首页预热进缓存。 */
+(function () {
+  const root = document.getElementById("shotCarousel");
+  const track = document.getElementById("carouselTrack");
+  if (!root || !track) return;
+  const slides = Array.from(track.querySelectorAll(".slide"));
+  const dots = Array.from(root.querySelectorAll(".carousel-dots button"));
+  const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  let index = 0, dir = 1, pauseUntil = 0, raf = 0;
+
+  function paint(i) {
+    index = (i + slides.length) % slides.length;
+    dots.forEach(function (d, k) {
+      d.setAttribute("aria-selected", k === index ? "true" : "false");
+    });
+  }
+  function go(i) {
+    paint(i);
+    /* behavior:"auto" 会沿用 CSS 的 scroll-behavior：正常平滑、reduced-motion 瞬间 */
+    track.scrollTo({ left: index * track.clientWidth, behavior: "auto" });
+  }
+  function jump(i) {
+    paint(i);
+    const prev = track.style.scrollBehavior;
+    track.style.scrollBehavior = "auto";
+    track.scrollLeft = index * track.clientWidth;
+    track.style.scrollBehavior = prev;
+  }
+  /* 手指划过之后，圆点要跟着当前停留的那张走 */
+  track.addEventListener("scroll", function () {
+    window.cancelAnimationFrame(raf);
+    raf = window.requestAnimationFrame(function () {
+      const i = Math.round(track.scrollLeft / Math.max(1, track.clientWidth));
+      if (i !== index) paint(i);
+    });
+  }, { passive: true });
+
+  function pause() { pauseUntil = Date.now() + 9000; }
+  ["pointerdown", "touchstart", "wheel", "keydown"].forEach(function (name) {
+    track.addEventListener(name, pause, { passive: true });
+  });
+  dots.forEach(function (d, i) {
+    d.addEventListener("click", function () { pause(); go(i); });
+  });
+  document.getElementById("shotPrev").addEventListener("click", function () { pause(); go(index - 1); });
+  document.getElementById("shotNext").addEventListener("click", function () { pause(); go(index + 1); });
+  root.addEventListener("keydown", function (e) {
+    if (e.key === "ArrowLeft")  { e.preventDefault(); pause(); go(index - 1); }
+    if (e.key === "ArrowRight") { e.preventDefault(); pause(); go(index + 1); }
+  });
+  window.addEventListener("resize", function () { jump(index); });
+
+  /* 来回翻而不是「到最后一张倒带回首张」，视觉上更连贯 */
+  if (!reduce) {
+    window.setInterval(function () {
+      if (document.hidden || Date.now() < pauseUntil) return;
+      let next = index + dir;
+      if (next >= slides.length) { dir = -1; next = index - 1; }
+      else if (next < 0) { dir = 1; next = index + 1; }
+      go(next);
+    }, 5000);
+  }
+  /* 首图随 HTML 立刻加载；其余等预热发出后再拉，滑动到时不会出现空白 */
+  window.setTimeout(function () {
+    slides.forEach(function (s, i) {
+      if (!i) return;
+      const img = s.querySelector("img[data-src]");
+      if (img) { img.src = img.dataset.src; img.removeAttribute("data-src"); }
+    });
+  }, 1400);
+})();
+</script>
+</body>
+</html>

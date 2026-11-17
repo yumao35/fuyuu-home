@@ -3,12 +3,12 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>fuyuu · 小岛与手工感的交互</title>
-<meta name="description" content="fuyuu 的作品大厅：一座叫《苔屿》的网页小岛，钓鱼、弦歌搏斗、种菜、和邻居打交道。">
+<title>fuyuu · 交互作品</title>
+<meta name="description" content="fuyuu 的交互作品：可以直接在浏览器里打开的两件小东西——《苔屿》一座能钓鱼的小岛，《滚动吧！奶蛋》一片会被弹飞的帷幕。">
 <meta name="theme-color" content="#f6efdd">
 <meta property="og:type" content="website">
-<meta property="og:title" content="fuyuu · 小岛与手工感的交互">
-<meta property="og:description" content="一座会呼吸的小岛，和一点点手工感。">
+<meta property="og:title" content="fuyuu · 交互作品">
+<meta property="og:description" content="fuyuu 的交互作品：可以直接在浏览器里打开的两件小东西——《苔屿》一座能钓鱼的小岛，《滚动吧！奶蛋》一片会被弹飞的帷幕。">
 <meta property="og:image" content="./cover.jpg">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23fff8eb'/%3E%3Cpath d='M6 20c2-6 6-9 10-9s8 3 10 9c-3 3-6 4-10 4s-7-1-10-4z' fill='%2378b6a8'/%3E%3Ccircle cx='16' cy='15' r='3.4' fill='%235f7f6a'/%3E%3C/svg%3E">
 <style>
@@ -107,7 +107,7 @@
     display: flex;
     align-items: center;
     gap: 10px;
-    margin: 0 4px 14px;
+    margin: 8px 4px 14px;
     font-size: 11px;
     letter-spacing: .22em;
     text-transform: uppercase;
@@ -142,6 +142,9 @@
   }
 
   .featured:focus-visible { outline: 3px solid var(--sea-deep); outline-offset: 4px; }
+
+  /* 大厅里同时挂两件作品时，卡片之间留一段呼吸 */
+  .featured + .featured { margin-top: 30px; }
 
   .shot {
     position: relative;
@@ -192,8 +195,11 @@
     letter-spacing: .03em;
   }
 
+  /* 全角叹号自带右侧空隙，「吧！奶蛋」看着像多了个空格；收一点回来 */
+  .bang { margin-right: -.30em; }
+
   .featured p {
-    margin: 0 0 18px;
+    margin: 0;
     font-size: 14.5px;
     color: var(--ink-soft);
   }
@@ -202,7 +208,7 @@
     display: flex;
     flex-wrap: wrap;
     gap: 6px;
-    margin: 0 0 22px;
+    margin: 0;
     padding: 0;
     list-style: none;
   }
@@ -285,6 +291,9 @@
     margin: 0;
   }
 
+  /* 邮箱之类的链接跟着页面配色走，不要浏览器默认那身蓝 */
+  .about .meta a { color: var(--sea-deep); }
+
   .about .meta b {
     display: inline-block;
     min-width: 5.2em;
@@ -331,11 +340,8 @@
     <nav>
       <a href="#works">作品</a>
       <a href="#about">关于</a>
-      <a href="./game/">进岛</a>
     </nav>
   </header>
-
-  <p class="lede">一座会呼吸的岛，和一些<em>手工感</em>的交互。</p>
 
   <section id="works" aria-labelledby="works-label">
     <p class="label" id="works-label">作品 / WORK</p>
@@ -352,18 +358,38 @@
              alt="苔屿小岛俯视图：环形潟湖、中间一座小山，草地上散布着树林、灯塔和主角">
       </div>
       <div class="body">
+        <p class="kicker">01 / 钓鱼</p>
         <div class="title-row">
           <h2>苔屿</h2>
           <a class="enter" href="./game/">fuyuu.top/game</a>
         </div>
+        <p>一座低多边形的小岛：抛竿钓鱼、和鱼搏斗一场「弦歌」，顺手种两行菜。</p>
       </div>
+    </article>
+
+    <article class="featured">
+      <div class="shot">
+        <img src="./roll/cover.jpg"
+             srcset="./roll/cover-800.jpg 800w, ./roll/cover.jpg 1600w"
+             sizes="(max-width: 780px) 100vw, 620px"
+             width="1600" height="900" loading="lazy"
+             alt="光谱点阵帷幕上，一颗发光的奶蛋站在波纹里">
+      </div>
+      <div class="body">
+        <p class="kicker">02 / 解压</p>
+        <div class="title-row">
+          <h2>滚动吧<span class="bang">！</span>奶蛋</h2>
+          <a class="enter" href="./roll/">fuyuu.top/roll</a>
+        </div>
+        <p>一片光点织成的帷幕。轻点荡开一圈，按住攒足力气，奶蛋会被波顶起来翻着跟头飞出去。</p>
+        </div>
     </article>
   </section>
 
   <section class="about" id="about" aria-labelledby="about-title">
     <div>
       <h2 id="about-title">关于</h2>
-      <p>这里放我自己做的交互作品。现在只开了一座小岛，更多还在路上。</p>
+      <p>这里放我自己做的交互作品。现在开了两件：一座小岛，一颗奶蛋；更多还在路上。</p>
     </div>
     <div>
       <p class="meta">
@@ -374,7 +400,7 @@
 
   <footer>
     <span>© 2026 fuyuu</span>
-    <span><a href="./game/">fuyuu.top/game</a></span>
+    <span><a href="./game/">fuyuu.top/game</a> · <a href="./roll/">fuyuu.top/roll</a></span>
   </footer>
 
 </div>
