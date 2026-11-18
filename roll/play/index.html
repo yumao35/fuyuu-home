@@ -297,8 +297,149 @@
 
 <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
 <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
-<script>window.__MODEL_URI="https://cdn.jsdelivr.net/gh/yumao35/fuyuu-home@5cc07ef9f841bc4e0ae251278486ca8f20d34b63/roll/play/naidan.glb";</script>
-<script defer src="https://cdn.jsdelivr.net/gh/yumao35/fuyuu-home@5cc07ef9f841bc4e0ae251278486ca8f20d34b63/roll/play/app.js" onerror="this.onerror=null;window.__MODEL_URI='./naidan.glb';var t=document.createElement('script');t.src='./app.js';document.head.appendChild(t);"></script>
+<script>window.__MODEL_URI="https://cdn.jsdelivr.net/gh/yumao35/fuyuu-home@501c55b46cbf64de22c34a647a0bad1f4bbda5d2/roll/play/naidan.glb";</script>
+<script defer src="https://cdn.jsdelivr.net/gh/yumao35/fuyuu-home@501c55b46cbf64de22c34a647a0bad1f4bbda5d2/roll/play/app.js" onerror="this.onerror=null;window.__MODEL_URI='./naidan.glb';var t=document.createElement('script');t.src='./app.js';document.head.appendChild(t);"></script>
+<style>
+  #boot canvas { width: 100%; height: 100%; display: block; animation: preBreathe 2.6s ease-in-out infinite alternate; }
+  @keyframes preBreathe { from { opacity: .70; } to { opacity: 1; } }
+  #boot i { display: none; }
+</style>
+<script>/* 首屏：three 还没到的时候，先用 Canvas 2D 画一张"像那么回事"的点阵心形帷幕。
+   只画一次（静态图），呼吸感交给 CSS 动画，省得每帧重绘上万个点。
+   只有网页版（壳）会内联这段；单文件版不需要。
+   第一帧真正画面出来时，index.html 会给 <html> 加 .booted，这块随之淡出并移除。 */
+(function () {
+  function start() {
+    var boot = document.getElementById('boot');
+    if (!boot) return;
+    var c = document.createElement('canvas');
+    c.id = 'pre';
+    c.setAttribute('aria-hidden', 'true');
+    boot.appendChild(c);
+
+    var ctx = c.getContext('2d');
+
+    /* 心形参数曲线，归一化到 x∈[-0.95,0.95]、y∈[-1,0.70] */
+    var HB = [];
+    (function buildHeart() {
+      var N = 480, minY = 1e9, maxY = -1e9;
+      for (var i = 0; i < N; i++) {
+        var t = (i / N) * Math.PI * 2;
+        var hx = 16 * Math.pow(Math.sin(t), 3);
+        var hy = 13 * Math.cos(t) - 5 * Math.cos(2 * t) - 2 * Math.cos(3 * t) - Math.cos(4 * t);
+        HB.push([hx / 17, hy / 17]);
+        if (hy / 17 < minY) minY = hy / 17;
+        if (hy / 17 > maxY) maxY = hy / 17;
+      }
+      HB.minY = minY;
+      HB.maxY = maxY;
+    })();
+
+    function hash(x, y) {
+      var n = Math.sin(x * 12.9898 + y * 78.233) * 43758.5453;
+      return n - Math.floor(n);
+    }
+
+    // 扫描线：横向切一条线，返回与心形边界的交点（成对出现＝一段有效区间）
+    function crossingsAt(y) {
+      var xs = [];
+      for (var i = 0; i < HB.length; i++) {
+        var a = HB[i], b = HB[(i + 1) % HB.length];
+        if ((a[1] <= y) !== (b[1] <= y)) {
+          var k = (y - a[1]) / ((b[1] - a[1]) || 1e-6);
+          xs.push(a[0] + (b[0] - a[0]) * k);
+        }
+      }
+      xs.sort(function (p, q) { return p - q; });
+      return xs;
+    }
+
+    function render() {
+      var dpr = Math.min(2, window.devicePixelRatio || 1);
+      var W = c.clientWidth || window.innerWidth;
+      var H = c.clientHeight || window.innerHeight;
+      c.width = Math.round(W * dpr);
+      c.height = Math.round(H * dpr);
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      ctx.clearRect(0, 0, W, H);
+
+      var cx = W * 0.5;
+      var top = H * 0.455;
+      var bot = H * 1.28;
+      var maxHalf = W * 0.455;
+
+      // 地平线一层暖光，和正式画面接得上
+      var g = ctx.createLinearGradient(0, top - H * 0.16, 0, top + H * 0.16);
+      g.addColorStop(0, 'rgba(255,205,150,0)');
+      g.addColorStop(0.55, 'rgba(255,205,150,0.05)');
+      g.addColorStop(1, 'rgba(255,205,150,0)');
+      ctx.fillStyle = g;
+      ctx.fillRect(0, top - H * 0.16, W, H * 0.32);
+
+      var rows = Math.max(80, Math.round((bot - top) / 2.4));
+      var stepPx = 3.0;
+      for (var r = 0; r < rows; r++) {
+        var v = r / (rows - 1);                     // 0 上（两瓣）/ 1 下（尖）
+        var yh = HB.maxY - v * (HB.maxY - HB.minY);
+        var xs = crossingsAt(yh);
+        var sy = top + Math.pow(v, 1.36) * (bot - top);
+        var hw = maxHalf * (0.24 + 0.76 * Math.pow(v, 0.85));
+        for (var s = 0; s < xs.length; s += 2) {
+          var xa = xs[s], xb = xs[s + 1];
+          if (xb === undefined || xb - xa < 0.01) continue;
+          var sxA = cx + (xa / 0.95) * hw;
+          var sxB = cx + (xb / 0.95) * hw;
+          var cols = Math.max(1, Math.round((sxB - sxA) / stepPx));
+          for (var j = 0; j <= cols; j++) {
+            if ((j + r) % 2) continue;              // 隔行错半格
+            var f = j / cols;
+            var xh = xa + f * (xb - xa);
+            var wave = Math.sin(xh * 3.1 + v * 6.0) * 0.5 + Math.sin(xh * 7.3 - v * 3.4) * 0.28;
+            var crest = 0.36 + 0.34 * Math.max(0, wave) + 0.10 * (1 - v);
+            var warm = Math.max(0, Math.min(1, crest * 1.55 - 0.12));
+            var rc = Math.round(124 + warm * 128);
+            var gc = Math.round(130 + warm * 112);
+            var bc = Math.round(140 + warm * 62);
+            var jit1 = hash(j * 1.7, r * 3.3);
+            var jit2 = hash(j * 5.1, r * 9.7);
+            var alpha = Math.min(1, (0.38 + crest * 0.62) * (0.78 + 0.42 * jit2));
+            ctx.fillStyle = 'rgba(' + rc + ',' + gc + ',' + bc + ',' + alpha.toFixed(3) + ')';
+            var sx = sxA + f * (sxB - sxA);
+            ctx.fillRect(sx + (jit1 - 0.5) * 1.4, sy + (jit2 - 0.5) * 2.2, 1.7, 1.7);
+          }
+        }
+      }
+    }
+
+    render();
+    window.addEventListener('resize', render);
+
+    // 正式画面出来就把自己收掉
+    var obs = new MutationObserver(function () {
+      if (document.documentElement.classList.contains('booted')) {
+        obs.disconnect();
+        setTimeout(function () { c.remove(); }, 900);
+      }
+    });
+    obs.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
+  }
+
+  /* 不能用 DOMContentLoaded 等：defer 的 app.js 慢的时候会把它一起拖住。 */
+  if (document.getElementById('boot')) {
+    start();
+  } else {
+    var tries = 0;
+    var timer = setInterval(function () {
+      if (document.getElementById('boot')) {
+        clearInterval(timer);
+        start();
+      } else if (++tries > 400) {
+        clearInterval(timer);
+      }
+    }, 16);
+  }
+})();
+</script>
 </head>
 <body>
 <div id="app"></div>
