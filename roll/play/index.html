@@ -300,8 +300,8 @@
 <script>
 (function () {
   var local = /[?&]local=1/.test(location.search);
-  var src = local ? './app.js' : "https://cdn.jsdelivr.net/gh/yumao35/fuyuu-home@523c61f0fd74530c7871f3ec736a23bb42c1ceff/roll/play/app.js";
-  var model = local ? './naidan.glb' : "https://cdn.jsdelivr.net/gh/yumao35/fuyuu-home@523c61f0fd74530c7871f3ec736a23bb42c1ceff/roll/play/naidan.glb";
+  var src = local ? './app.js' : "https://cdn.jsdelivr.net/gh/yumao35/fuyuu-home@01831fe192bd78780eb5a396ba5ff37035e6a060/roll/play/app.js";
+  var model = local ? './naidan.glb' : "https://cdn.jsdelivr.net/gh/yumao35/fuyuu-home@01831fe192bd78780eb5a396ba5ff37035e6a060/roll/play/naidan.glb";
   window.__MODEL_URI = model;
   var s = document.createElement('script');
   s.src = src;
@@ -329,6 +329,13 @@
       location.search = '?local=1';
     });
   }, 15000);
+
+  /* 第二次打开吃缓存：壳、app.js、模型都进 CacheStorage */
+  if ('serviceWorker' in navigator) {
+    addEventListener('load', function () {
+      navigator.serviceWorker.register('./sw.js').catch(function () {});
+    });
+  }
 })();
 </script>
 <style>
