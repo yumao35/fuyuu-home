@@ -1,4 +1,4 @@
-const V = 'vmwm9m0vy';
+const V = 'vmwma9tqp';
 const CORE = ['./', './app.js', './naidan.glb'];
 
 self.addEventListener('install', (e) => {
