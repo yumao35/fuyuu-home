@@ -19,6 +19,31 @@
   }
 
   #app { position: fixed; inset: 0; }
+
+  /* 等 app.js 的那几秒：只给一点呼吸的光，别让人对着黑屏 */
+  #boot {
+    position: fixed;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    background: radial-gradient(120% 90% at 50% 42%, #141a22 0%, #080706 62%);
+    z-index: 5;
+    transition: opacity .7s ease;
+  }
+  #boot i {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #ffd9a8;
+    box-shadow: 0 0 18px 6px rgba(255, 210, 150, .18);
+    animation: bootBreathe 1.9s ease-in-out infinite;
+  }
+  @keyframes bootBreathe {
+    0%, 100% { opacity: .18; transform: scale(.86); }
+    50% { opacity: .85; transform: scale(1); }
+  }
+  html.booted #boot { opacity: 0; visibility: hidden; }
+
   #app canvas {
     display: block;
     width: 100%;
@@ -272,11 +297,12 @@
 
 <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
 <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
-<script>window.__MODEL_URI="https://cdn.jsdelivr.net/gh/yumao35/fuyuu-home@2c9788f1582afad442cf5762edcad19bc4de02bd/roll/play/naidan.glb";</script>
-<script defer src="https://cdn.jsdelivr.net/gh/yumao35/fuyuu-home@2c9788f1582afad442cf5762edcad19bc4de02bd/roll/play/app.js" onerror="this.onerror=null;window.__MODEL_URI='./naidan.glb';var t=document.createElement('script');t.src='./app.js';document.head.appendChild(t);"></script>
+<script>window.__MODEL_URI="https://cdn.jsdelivr.net/gh/yumao35/fuyuu-home@5cc07ef9f841bc4e0ae251278486ca8f20d34b63/roll/play/naidan.glb";</script>
+<script defer src="https://cdn.jsdelivr.net/gh/yumao35/fuyuu-home@5cc07ef9f841bc4e0ae251278486ca8f20d34b63/roll/play/app.js" onerror="this.onerror=null;window.__MODEL_URI='./naidan.glb';var t=document.createElement('script');t.src='./app.js';document.head.appendChild(t);"></script>
 </head>
 <body>
 <div id="app"></div>
+<div id="boot"><i></i></div>
 
 <div id="dock"><button id="brush" aria-label="画布"></button></div>
 
