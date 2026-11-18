@@ -12,8 +12,8 @@
 <meta property="og:image" content="./cover.jpg">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%230d1116'/%3E%3Cpath d='M16 24c-6.4-4.2-9.4-7.8-9.4-11.2A4.7 4.7 0 0116 10a4.7 4.7 0 019.4 2.8c0 3.4-3 7-9.4 11.2z' fill='%23e8b878'/%3E%3C/svg%3E">
 <!-- 这一页不只是门牌，也是预热页：玩家读介绍的几秒钟里，浏览器在后台把游戏首页
-     拉进 HTTP 缓存，点下去就不用干等。游戏现在和门牌同一个域，提前拉一次就够。 -->
-<link rel="prefetch" href="./play/index.html" as="document">
+     拉进 HTTP 缓存，点下去就不用干等。游戏现在托管在 roll.fuyuu.top（Cloudflare Pages）。 -->
+<link rel="prefetch" href="https://roll.fuyuu.top/" as="document">
 <style>
   :root {
     --ink: #241d18;
@@ -228,13 +228,13 @@
       <p class="meta">
         <b>更新</b><span id="lastUpdated">2026-11-17</span>
       </p>
-      <a class="enter" href="./play/">进入帷幕 <span class="arrow">→</span></a>
+      <a class="enter" href="https://roll.fuyuu.top/">进入帷幕 <span class="arrow">→</span></a>
     </div>
   </article>
 
   <footer>
     <span>© 2026 fuyuu</span>
-    <span><a href="../">返回大厅</a> · <a href="./play/">fuyuu.top/roll/play</a></span>
+    <span><a href="../">返回大厅</a> · <a href="https://roll.fuyuu.top/">roll.fuyuu.top</a></span>
   </footer>
 
 </div>
@@ -244,7 +244,7 @@
 (function () {
   function warm() {
     try {
-      fetch("./play/", { mode: "no-cors", credentials: "omit" }).catch(function () {});
+      fetch("https://roll.fuyuu.top/", { mode: "no-cors", credentials: "omit" }).catch(function () {});
     } catch (error) { /* 预取失败也不影响跳转 */ }
   }
   if (document.readyState === "complete") window.setTimeout(warm, 900);
