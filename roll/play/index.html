@@ -269,6 +269,11 @@
     opacity: 0.9;
   }
 </style>
+
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
+<script>window.__MODEL_URI="https://cdn.jsdelivr.net/gh/yumao35/fuyuu-home@2c9788f1582afad442cf5762edcad19bc4de02bd/roll/play/naidan.glb";</script>
+<script defer src="https://cdn.jsdelivr.net/gh/yumao35/fuyuu-home@2c9788f1582afad442cf5762edcad19bc4de02bd/roll/play/app.js" onerror="this.onerror=null;window.__MODEL_URI='./naidan.glb';var t=document.createElement('script');t.src='./app.js';document.head.appendChild(t);"></script>
 </head>
 <body>
 <div id="app"></div>
@@ -297,21 +302,7 @@
 </div>
 
 <script>
-/* 先试 CDN，再回落同源；两条路都失败才会真的白屏 */
-window.__MODEL_URI = "https://cdn.jsdelivr.net/gh/yumao35/fuyuu-home@981227aff617c79bd2fe90d1ae66604602defb30/roll/play/naidan.glb";
-(function () {
-  var s = document.createElement('script');
-  s.src = "https://cdn.jsdelivr.net/gh/yumao35/fuyuu-home@981227aff617c79bd2fe90d1ae66604602defb30/roll/play/app.js";
-  s.onerror = function () {
-    if (s.dataset.fallback) return;
-    s.dataset.fallback = '1';
-    window.__MODEL_URI = './naidan.glb';
-    var t = document.createElement('script');
-    t.src = './app.js';
-    document.body.appendChild(t);
-  };
-  document.body.appendChild(s);
-})();
+/* app.js 由 head 里的 defer 脚本加载，这里什么都不做 */
 </script>
 </body>
 </html>
