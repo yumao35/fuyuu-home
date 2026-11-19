@@ -1,5 +1,5 @@
-const V = 'vmwma9tqp';
-const CORE = ['./', './app.js', './naidan.glb'];
+const V = 'vmwn2iyc9';
+const CORE = ['./', './app.js', './naidan.glb', './favicon.png'];
 
 self.addEventListener('install', (e) => {
   e.waitUntil(
@@ -49,7 +49,7 @@ self.addEventListener('fetch', (e) => {
   if (req.method !== 'GET') return;
   const url = new URL(req.url);
   const same = url.origin === self.location.origin;
-  const cdn = url.hostname === 'cdn.jsdelivr.net';
+  const cdn = url.hostname.endsWith('jsdelivr.net');
   if (!same && !cdn) return;
 
   if (req.mode === 'navigate') {
